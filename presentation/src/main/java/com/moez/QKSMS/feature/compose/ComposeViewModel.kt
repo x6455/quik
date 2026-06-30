@@ -97,6 +97,7 @@ import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Named
+import android.net.Uri
 
 class ComposeViewModel @Inject constructor(
     @Named("query") private val query: String,
