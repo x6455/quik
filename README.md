@@ -1,6 +1,6 @@
 ![octoshrimpy/QUIK](.github/octoshrimpy_quik.jpg)
 
-# QUIK
+# QUIK fork
 
 [![Manual Release](https://github.com/octoshrimpy/quik/actions/workflows/manual-release.yml/badge.svg)](https://github.com/octoshrimpy/quik/actions/workflows/manual-release.yml)
 <a href="https://hosted.weblate.org/engage/quik/">
