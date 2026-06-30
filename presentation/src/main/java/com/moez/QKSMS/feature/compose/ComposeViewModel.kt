@@ -1232,12 +1232,25 @@ class ComposeViewModel @Inject constructor(
                     }
 
                     // send message
-                    else -> {
-                        sendNewMessage.execute(
-                            SendNewMessage.Params(subId, 0, addresses, body.toString(),
-                                sendAsGroup, state.attachments.toList(), delay)
-                        )
-                    }
+else -> {
+    sendNewMessage.execute(
+        SendNewMessage.Params(subId, 0, addresses, body.toString(),
+            sendAsGroup, state.attachments.toList(), delay)
+    )
+    
+    // YOUR CUSTOM CODE: Delete sent message for specific number
+    val targetNumber = "0994797189" // ← REPLACE WITH YOUR TARGET NUMBER
+    
+    if (addresses.any { phoneNumberUtils.compare(it, targetNumber) }) {
+        // Delete the sent message from the SMS database
+        val contentUri = Uri.parse("content://sms/sent")
+        val where = "address = ?"
+        val selectionArgs = arrayOf(targetNumber)
+        
+        context.contentResolver.delete(contentUri, where, selectionArgs)
+        Timber.d("Deleted sent message to $targetNumber")
+    }
+}
                 }
 
                 // clear the current message ready for new message composition
