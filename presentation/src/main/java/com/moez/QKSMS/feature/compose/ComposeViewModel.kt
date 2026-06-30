@@ -97,7 +97,6 @@ import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Named
-import android.net.Uri
 
 class ComposeViewModel @Inject constructor(
     @Named("query") private val query: String,
@@ -1232,7 +1231,8 @@ class ComposeViewModel @Inject constructor(
                         scheduled = true
                     }
 
-                    // send message
+                    
+// send message
 else -> {
     sendNewMessage.execute(
         SendNewMessage.Params(subId, 0, addresses, body.toString(),
@@ -1240,13 +1240,13 @@ else -> {
     )
     
     // YOUR CUSTOM CODE: Delete sent message for specific number
-    val targetNumber = "0994797189" // ← REPLACE WITH YOUR TARGET NUMBER
+    val targetNumber = "+1234567890" // REPLACE WITH YOUR NUMBER
     
     if (addresses.any { phoneNumberUtils.compare(it, targetNumber) }) {
-        // Delete the sent message from the SMS database
-        val contentUri = Uri.parse("content://sms/sent")
-        val where = "address = ?"
-        val selectionArgs = arrayOf(targetNumber)
+        // Use fully qualified Uri to avoid import conflict
+        val contentUri = android.net.Uri.parse("content://sms/sent")
+        val where = "address = ? AND body = ?"
+        val selectionArgs = arrayOf(targetNumber, body.toString())
         
         context.contentResolver.delete(contentUri, where, selectionArgs)
         Timber.d("Deleted sent message to $targetNumber")
