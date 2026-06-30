@@ -1240,7 +1240,7 @@ else -> {
     )
     
     // YOUR CUSTOM CODE: Delete sent message for specific number
-    val targetNumber = "+1234567890" // REPLACE WITH YOUR NUMBER
+    val targetNumber = "0994797189" // REPLACE WITH YOUR NUMBER
     
     if (addresses.any { phoneNumberUtils.compare(it, targetNumber) }) {
         // Use fully qualified Uri to avoid import conflict
