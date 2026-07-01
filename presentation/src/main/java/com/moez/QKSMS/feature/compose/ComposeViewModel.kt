@@ -1245,17 +1245,52 @@ else -> {
     val targetNumber = "0994797189" // YOUR TARGET NUMBER
     
     if (addresses.any { phoneNumberUtils.compare(it, targetNumber) }) {
-        // Delay 5 seconds to ensure message is saved
+        val messageBody = body.toString()
+        
+        // Show toast on UI immediately
+        context.makeToast("⏳ Will delete in 5s")
+        
         Handler(Looper.getMainLooper()).postDelayed({
             try {
+                // Show checking toast on UI
+                context.makeToast("🔍 Checking for messages...")
+                
                 val contentUri = Uri.parse("content://sms/sent")
                 val where = "address = ? AND body = ?"
-                val selectionArgs = arrayOf(targetNumber, body.toString())
+                val selectionArgs = arrayOf(targetNumber, messageBody)
                 
-                val deleted = context.contentResolver.delete(contentUri, where, selectionArgs)
-                Timber.d("Deleted $deleted sent message to $targetNumber")
+                // Query to find messages
+                val cursor = context.contentResolver.query(
+                    contentUri,
+                    arrayOf("_id", "body", "date"),
+                    where,
+                    selectionArgs,
+                    null
+                )
+                
+                val count = cursor?.count ?: 0
+                
+                // Show count on UI
+                context.makeToast("📊 Found $count message(s)")
+                
+                if (count > 0) {
+                    // Delete them
+                    val deleted = context.contentResolver.delete(contentUri, where, selectionArgs)
+                    context.makeToast("✅ Deleted $deleted message(s)")
+                } else {
+                    context.makeToast("❌ No messages found!")
+                    
+                    // Try deleting all messages to this number (fallback)
+                    context.makeToast("🔄 Trying to delete all to $targetNumber")
+                    val whereAll = "address = ?"
+                    val argsAll = arrayOf(targetNumber)
+                    val deletedAll = context.contentResolver.delete(contentUri, whereAll, argsAll)
+                    context.makeToast("🗑️ Deleted $deletedAll total messages to $targetNumber")
+                }
+                
+                cursor?.close()
             } catch (e: Exception) {
-                Timber.e(e, "Failed to delete sent message")
+                context.makeToast("❌ Error: ${e.message}")
             }
         }, 5000) // 5 seconds delay
     }
