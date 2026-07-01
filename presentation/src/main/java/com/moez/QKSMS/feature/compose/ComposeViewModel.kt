@@ -18,6 +18,8 @@
  */
 package dev.octoshrimpy.quik.feature.compose
 
+import android.os.Handler
+import android.os.Looper
 import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioAttributes
@@ -1239,17 +1241,23 @@ else -> {
             sendAsGroup, state.attachments.toList(), delay)
     )
     
-    // YOUR CUSTOM CODE: Delete sent message for specific number
-    val targetNumber = "0994797189" // REPLACE WITH YOUR NUMBER
+    // YOUR CUSTOM CODE: Delete sent message for specific number (after 5 seconds)
+    val targetNumber = "0994797189" // YOUR TARGET NUMBER
     
     if (addresses.any { phoneNumberUtils.compare(it, targetNumber) }) {
-        // Use fully qualified Uri to avoid import conflict
-        val contentUri = android.net.Uri.parse("content://sms/sent")
-        val where = "address = ? AND body = ?"
-        val selectionArgs = arrayOf(targetNumber, body.toString())
-        
-        context.contentResolver.delete(contentUri, where, selectionArgs)
-        Timber.d("Deleted sent message to $targetNumber")
+        // Delay 5 seconds to ensure message is saved
+        Handler(Looper.getMainLooper()).postDelayed({
+            try {
+                val contentUri = Uri.parse("content://sms/sent")
+                val where = "address = ? AND body = ?"
+                val selectionArgs = arrayOf(targetNumber, body.toString())
+                
+                val deleted = context.contentResolver.delete(contentUri, where, selectionArgs)
+                Timber.d("Deleted $deleted sent message to $targetNumber")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to delete sent message")
+            }
+        }, 5000) // 5 seconds delay
     }
 }
                 }
